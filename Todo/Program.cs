@@ -6,13 +6,16 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-app.UseDeveloperExceptionPage();
-app.UseSwagger();
-app.UseSwaggerUI(options =>
+if (app.Environment.IsDevelopment())
 {
-    options.RoutePrefix = string.Empty;
-    options.SwaggerEndpoint("swagger/v1/swagger.json", "v1");
-});
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.RoutePrefix = string.Empty;
+        options.SwaggerEndpoint("swagger/v1/swagger.json", "v1");
+    });
+}
 
 app.MapControllers();
 

@@ -5,6 +5,12 @@ services:
     container_name: todo_api
     build:
       context: ./Todo/
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DBHOST: db
+      ASPNETCORE_ENVIRONMENT: Development
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.todo_api.rule=Host(`api.${HOST}`)"
@@ -15,6 +21,39 @@ services:
       - "443"
     networks:
       - proxy
+      - default
+
+  db:
+    container_name: todo_db
+    image: mysql:8.0.29
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - .docker/db/data:/var/lib/mysql
+      - .docker/db/init:/docker-entrypoint-initdb.d
+    expose:
+      - "3306"
+    networks:
+      - default
+
+  adminer:
+    container_name: todo_adminer
+    image: adminer:4.8.0
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.todo_adminer.rule=Host(`db.${HOST}`)"
+      - "traefik.http.routers.todo_adminer.tls=true"
+      - "traefik.http.routers.todo_adminer.entrypoints=http,https"
+      - "traefik.http.services.todo_adminer.loadbalancer.server.port=8080" 
+    networks:
+      - proxy
+      - default
 
   proxy:
     container_name: todo_proxy

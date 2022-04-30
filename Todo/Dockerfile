@@ -9,13 +9,15 @@ COPY ["./Todo.csproj", "Todo/"]
 RUN dotnet restore "Todo/Todo.csproj"
 COPY . "./Todo"
 WORKDIR "/src/Todo"
-RUN dotnet build "Todo.csproj" -c Release -o /app/build
+RUN dotnet build "Todo.csproj" -c Debug -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Todo.csproj" -c Release -o /app/publish
+RUN dotnet publish "Todo.csproj" -c Debug -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-CMD ["dotnet", "Todo.dll"]
+ADD entrypoint.sh /
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
