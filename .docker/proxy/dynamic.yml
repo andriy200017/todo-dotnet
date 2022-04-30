@@ -1,0 +1,18 @@
+http:
+  routers:
+    proxy:
+      rule: "Host(`proxy.todo.localhost`)"
+      service: "api@internal"
+      tls:
+        domains:
+          - main: "todo.localhost"
+            sans:
+              - "*.todo.localhost"
+          - main: "todo.local"
+            sans:
+              - "*.todo.local"
+
+tls:
+  certificates:
+    - certFile: "/etc/certs/local-cert.pem"
+      keyFile: "/etc/certs/local-key.pem"
