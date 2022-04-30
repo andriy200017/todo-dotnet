@@ -1,13 +1,13 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["Todo/Todo.csproj", "Todo/"]
+
+COPY ["./Todo.csproj", "Todo/"]
+
 RUN dotnet restore "Todo/Todo.csproj"
-COPY . .
+COPY . "./Todo"
 WORKDIR "/src/Todo"
 RUN dotnet build "Todo.csproj" -c Release -o /app/build
 
@@ -17,4 +17,5 @@ RUN dotnet publish "Todo.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Todo.dll"]
+
+CMD ["dotnet", "Todo.dll"]

@@ -1,6 +1,21 @@
 version: '3.9'
 
 services:
+  web:
+    container_name: todo_api
+    build:
+      context: ./Todo/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.todo_api.rule=Host(`api.${HOST}`)"
+      - "traefik.http.routers.todo_api.tls=true"
+      - "traefik.http.routers.todo_api.entrypoints=http,https"
+    expose:
+      - "80"
+      - "443"
+    networks:
+      - proxy
+
   proxy:
     container_name: todo_proxy
     image: traefik:v2.6
